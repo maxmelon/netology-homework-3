@@ -10,11 +10,42 @@ $animals_in_the_world = array (
   "Australia" => array ("Pteropus brunneus", "Rattus macleari"),
 );
 
+// Находим названия зверей, которые состоят из двух слов
 $two_words_animals = array();
+foreach ($animals_in_the_world as $continent => $animals_name) {
+  foreach ($animals_name as $each_animals_name) {
+    $number_of_words = str_word_count ($each_animals_name, $format = 0);
+    if ($number_of_words === 2) {
+      array_push($two_words_animals, $each_animals_name);
+    }
+  }
+}
+
+// Формируем массив из отдельных слов, перемешиваем
 $words = array();
+foreach ($two_words_animals as $value) {
+  $a = explode(' ', $value);
+  foreach ($a as $b) {
+    array_push($words, $b);
+  }
+}
+shuffle($words);
+
+// Сортируем слова на первые (по которым будем привязывать к стране) и вторые
 $first_words = array();
 $second_words = array();
+foreach ($words as $words_key => $word) {
+  if(preg_match('/[A-Z]/', $word)) {
+    array_push($first_words, $word);
+  }
+  else
+  array_push($second_words, $word);
+}
 
+// Формируем новые названия
+$new_names = array_combine($first_words, $second_words);
+
+// Создаем функцию для поиска внутри массива, чтобы определить страну
 function deep_search ($needle, $array) {
 $value1 = array();
   foreach ($array as $key => $values) {
@@ -28,38 +59,8 @@ $value1 = array();
   }
 }
 
-foreach ($animals_in_the_world as $continent => $animals_name) {
-
-  foreach ($animals_name as $each_animals_name) {
-    $number_of_words = str_word_count ($each_animals_name, $format = 0);
-
-    if ($number_of_words === 2) {
-      array_push($two_words_animals, $each_animals_name);
-    }
-  }
-}
-
-foreach ($two_words_animals as $value) {
-  $a = explode(' ', $value);
-  foreach ($a as $b) {
-    array_push($words, $b);
-  }
-}
-
-array_unshift($words, $words[0]);
-unset($words[0]);
-shuffle($words);
-
-foreach ($words as $words_key => $word) {
-  if(!preg_match('/[A-Z]/', $word)) {
-    array_push($second_words, $word);
-  }
-  else
-  array_push($first_words, $word);
-}
-
-$new_names = array_combine($first_words, $second_words);
-
+// С использованием функции определяем, к какой стране относится первое слово.
+// Выводим результаты на экран.
 echo "<h2>Africa</h2>";
 $string = '';
 foreach ($new_names as $first_word => $second_word) {
